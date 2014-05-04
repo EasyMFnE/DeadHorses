@@ -1,0 +1,31 @@
+name: DeadHorses
+version: '1.0'
+description: Allow players to tame and ride undead horses!
+
+author: EasyMFnE
+
+database: false
+main: net.easymfne.deadhorses.DeadHorses
+load: STARTUP
+
+commands:
+  deadhorses:
+    aliases: [dh]
+    description: DeadHorses main command
+    permission: deadhorses.admin
+    permission-message: 'Unknown command. Type "/help" for help.'
+    usage: |
+           /deadhorses reload - Reload configuration from disk
+           /deadhorses summon - Summon dead horses for testing
+
+permissions:
+  deadhorses.admin:
+    default: op
+    description: Allows access to admin functionality
+    children:
+      deadhorses.user: true
+
+  deadhorses.user:
+    default: false
+    description: Allows access to user functionality
+

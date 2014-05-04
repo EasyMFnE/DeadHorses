@@ -1,0 +1,12 @@
+# Eclipse stuff
+/.classpath
+/.project
+/.settings
+
+# maven
+/build.xml
+/target
+/maven.txt
+
+# temp files
+*~

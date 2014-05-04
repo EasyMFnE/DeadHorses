@@ -1,0 +1,15 @@
+# items are case-insensitive, but must match org.bukkit.Material
+# items can be defined with specific datavalues like:
+#   'golden_apple:1': 100.0
+# chances are in terms of percent (i.e. 0.0-100.0)
+
+skeleton_horse:
+  spider_eye: 2.5
+  fermented_spider_eye: 5.0
+  poisonous_potato: 10.0
+undead_horse:
+  raw_beef: 10.0
+  pork: 5.0
+  raw_chicken: 2.5
+  raw_fish: 1.25
+
