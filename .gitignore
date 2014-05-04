@@ -10,3 +10,4 @@
 
 # temp files
 *~
+/dependency-reduced-pom.xml

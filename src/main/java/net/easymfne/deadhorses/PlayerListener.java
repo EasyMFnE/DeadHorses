@@ -24,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -31,6 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -49,6 +52,18 @@ public class PlayerListener implements Listener {
     private class DeadEntityTameEvent extends EntityTameEvent {
         public DeadEntityTameEvent(LivingEntity entity, AnimalTamer owner) {
             super(entity, owner);
+        }
+    }
+    
+    /**
+     * Extension of VehicleEnterEvent used for allowing other plugins to cancel
+     * mounting (to tame) of DeadHorses.
+     * 
+     * @author Eric Hildebrand
+     */
+    private class DeadVehicleEnterEvent extends VehicleEnterEvent {
+        public DeadVehicleEnterEvent(Vehicle vehicle, Entity entered) {
+            super(vehicle, entered);
         }
     }
     
@@ -123,12 +138,22 @@ public class PlayerListener implements Listener {
     }
     
     /**
+     * @param player
+     *            Player with(out) item in hand
+     * @return Whether the player is holding nothing
+     */
+    private boolean isHoldingNothing(Player player) {
+        return player.getItemInHand() == null
+                || player.getItemInHand().getType() == Material.AIR;
+    }
+    
+    /**
      * Handle outcomes of a player attempting to leash or feed a Dead Horse.
      * 
      * @param event
      *            Caught event
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!isDeadHorse(event.getRightClicked())) {
             return;
@@ -140,7 +165,8 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         
         /* User is leashing a DeadHorse */
-        if (!horse.isLeashed() && isHoldingLeash(player) && useItem(player)) {
+        if (plugin.getPluginConfig().isLeashingEnabled() && !horse.isLeashed()
+                && isHoldingLeash(player) && useItem(player)) {
             event.setCancelled(true);
             PlayerLeashDeadEntityEvent leashEvent = new PlayerLeashDeadEntityEvent(
                     horse, player, player);
@@ -152,14 +178,17 @@ public class PlayerListener implements Listener {
         }
         
         /* User is feeding a DeadHorse */
-        if (isHoldingFood(player, horse.getVariant()) && useItem(player)) {
+        if ((plugin.getPluginConfig().isFoodTamingEnabled() || plugin
+                .getPluginConfig().isFoodAgingEnabled())
+                && isHoldingFood(player, horse.getVariant()) && useItem(player)) {
             event.setCancelled(true);
             boolean success = random.nextDouble() * 100.0 < plugin
                     .getPluginConfig().getFoodChance(horse.getVariant(),
                             player.getItemInHand());
             
             /* Successfully tamed a wild, adult horse */
-            if (horse.isAdult() && !horse.isTamed() && success) {
+            if (plugin.getPluginConfig().isFoodTamingEnabled()
+                    && horse.isAdult() && !horse.isTamed() && success) {
                 DeadEntityTameEvent tameEvent = new DeadEntityTameEvent(horse,
                         player);
                 plugin.getServer().getPluginManager().callEvent(tameEvent);
@@ -171,12 +200,65 @@ public class PlayerListener implements Listener {
             }
             
             /* Successfully aged an aging, non-adult horse */
-            if (!horse.isAdult() && !horse.getAgeLock() && success) {
+            if (plugin.getPluginConfig().isFoodAgingEnabled()
+                    && !horse.isAdult() && !horse.getAgeLock() && success) {
                 horse.setAdult();
             }
             
             playFeedEffects(horse, false);
+            return;
         }
+        
+        /* User is mounting a DeadHorse */
+        if (plugin.getPluginConfig().isVanillaTamingEnabled()
+                && horse.isAdult() && !horse.isTamed() && horse.isEmpty()) {
+            if (!isHoldingNothing(player)) {
+                playAngryEffects(horse);
+                return;
+            }
+            DeadVehicleEnterEvent mountEvent = new DeadVehicleEnterEvent(horse,
+                    player);
+            plugin.getServer().getPluginManager().callEvent(mountEvent);
+            if (!mountEvent.isCancelled()) {
+                horse.setPassenger(player);
+            }
+            return;
+        }
+    }
+    
+    /**
+     * Handle a player being thrown from an untamed Dead Horse.
+     * 
+     * @param event
+     *            Caught event
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onVehicleExitEvent(VehicleExitEvent event) {
+        if (!isDeadHorse(event.getVehicle())) {
+            return;
+        }
+        if (!(event.getExited() instanceof Player) || !Perms.isUser((Player) event.getExited())) {
+            return;
+        }
+        Horse horse = (Horse) event.getVehicle();
+        
+        if (plugin.getPluginConfig().isVanillaTamingEnabled()
+                && horse.isAdult() && !horse.isTamed()) {
+            playAngryEffects(horse);
+        }
+    }
+    
+    
+    /**
+     * Play effects triggered by making a horse angry.
+     * 
+     * @param horse
+     *            The horse
+     */
+    private void playAngryEffects(Horse horse) {
+        horse.getWorld().playSound(horse.getLocation(), Sound.HORSE_ANGRY,
+                1.0f, 0.75f);
+        horse.playEffect(EntityEffect.WOLF_SMOKE);
     }
     
     /**

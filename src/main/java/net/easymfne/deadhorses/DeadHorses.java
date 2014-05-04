@@ -15,11 +15,13 @@
 package net.easymfne.deadhorses;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 /**
  * Main plugin class, responsible for its own setup, logging, reloading, and
@@ -112,6 +114,7 @@ public class DeadHorses extends JavaPlugin {
         config = new Config(this);
         deadHorsesCommand = new DeadHorsesCommand(this);
         playerListener = new PlayerListener(this);
+        startMetrics();
         fancyLog("=== ENABLE COMPLETE ("
                 + (Calendar.getInstance().getTimeInMillis() - start)
                 + "ms) ===");
@@ -128,6 +131,21 @@ public class DeadHorses extends JavaPlugin {
         fancyLog("=== RELOAD COMPLETE ("
                 + (Calendar.getInstance().getTimeInMillis() - start)
                 + "ms) ===");
+    }
+    
+    /**
+     * If possible, instantiate Metrics and connect with mcstats.org
+     */
+    private void startMetrics() {
+        MetricsLite metrics;
+        try {
+            metrics = new MetricsLite(this);
+            if (metrics.start()) {
+                fancyLog("Metrics enabled.");
+            }
+        } catch (IOException e) {
+            fancyLog(Level.WARNING, "Metrics exception: " + e.getMessage());
+        }
     }
     
 }

@@ -74,7 +74,12 @@ public class DeadHorsesCommand implements CommandExecutor {
                 Horse horse = (Horse) player.getWorld().spawnEntity(
                         player.getLocation(), EntityType.HORSE);
                 horse.setVariant(variant);
-                horse.setBaby();
+                if (plugin.getPluginConfig().isFoodAgingEnabled()) {
+                    horse.setBaby();
+                }
+                else {
+                    horse.setAdult();
+                }
             }
             sender.sendMessage("Dead horses have been summoned.");
             return true;

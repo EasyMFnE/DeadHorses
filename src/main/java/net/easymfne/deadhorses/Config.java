@@ -87,4 +87,33 @@ public class Config {
         return false;
     }
     
+    /**
+     * @return Whether users can make baby dead horses age by feeding them.
+     */
+    public boolean isFoodAgingEnabled() {
+        return plugin.getConfig().getBoolean("feeding-can-age", false);
+    }
+    
+    /**
+     * @return Whether users can attempt to tame dead horses by feeding them.
+     */
+    public boolean isFoodTamingEnabled() {
+        return plugin.getConfig().getBoolean("taming.food-based", false);
+    }
+    
+    /**
+     * @return Whether users can attach leashes to dead horses.
+     */
+    public boolean isLeashingEnabled() {
+        return plugin.getConfig().getBoolean("leashing", false);
+    }
+    
+    /**
+     * @return Whether users can attempt to tame dead horses by riding them,
+     *         like in vanilla Minecraft.
+     */
+    public boolean isVanillaTamingEnabled() {
+        return plugin.getConfig().getBoolean("taming.vanilla-like", false);
+    }
+    
 }

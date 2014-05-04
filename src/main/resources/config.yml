@@ -1,3 +1,19 @@
+###########################################################
+# This file is part of the DeadHorses plugin by EasyMFnE. #
+###########################################################
+
+# GENERAL SETTINGS
+##################
+
+feeding-can-age: true
+leashing: true
+taming:
+  vanilla-like: true
+  food-based: true
+
+
+# FEEDING SETTINGS
+##################
 # items are case-insensitive, but must match org.bukkit.Material
 # items can be defined with specific datavalues like:
 #   'golden_apple:1': 100.0
@@ -12,4 +28,3 @@ undead_horse:
   pork: 5.0
   raw_chicken: 2.5
   raw_fish: 1.25
-
