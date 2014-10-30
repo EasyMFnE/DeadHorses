@@ -6,7 +6,7 @@
 [Bug Report](https://github.com/EasyMFnE/DeadHorses/issues) |
 [Donate](https://www.paypal.com/cgi-bin/webscr?hosted_button_id=457RX2KYUDY5G&item_name=DeadHorses&cmd=_s-xclick)</center>
 
-<center>**Latest Release:** v1.2-alpha for Bukkit 1.7+</center>
+<center>**Latest Release:** v1.2 for Bukkit 1.7+</center>
 
 ## About ##
 
@@ -21,8 +21,10 @@ Players using the DeadHorses plugin can:
 * Tame dead horses (see below)
 * Mount & ride dead horses
 * Equip dead horses with barding (armor)
+* Modify packets to send barding information to clients (requires ProtocolLib)
 
-**Note:** This plugin does not affect natural mob spawning, and is best used with another plugin that allows dead horses to spawn.  The horses can be summoned via command (see `Commands`), but is primarily meant for administrative testing and not for users.
+**Note:** This plugin does not affect natural mob spawning, and is best used with another plugin that allows dead horses to spawn.  The horses can be summoned via command (see `Commands`), but is primarily meant for administrative testing and not for users.  Example plugins: [NetherMobs](https://github.com/EasyMFnE/NetherMobs) and [UnLivingHorsies](http://dev.bukkit.org/bukkit-plugins/unlivinghorsies/).
+
 
 ### Taming ###
 
@@ -37,7 +39,9 @@ In addition to taming dead horses, feeding can cause baby dead horses to mature 
 
 ### Barding ###
 
-Dead horses can be equipped with barding like normal horses.  When equipped, the damage suffered is reduced by the appropriate amount.  The barding does not render, because of a limitation within Minecraft itself.
+Dead horses can be equipped with barding like normal horses.  When equipped, the damage suffered is reduced by the appropriate amount.
+
+**Note:** The server does not send the metadata necessary to texture dead horses with the barding texture.  Modifying the packets sent to the client fixes this, but requires client-side modifications to render properly.  If packet modification is enabled, clients without necessary modifications will see the horse with a pure white texture.  One modification that allows this is [HorseTweaks](https://github/com/EasyMFnE/HorseTweaks).
 
 ## Installation ##
 
@@ -70,6 +74,7 @@ Default configuration has all set to 'true'.  Settings default to 'false' if und
 * `armor.undead_horse:` & `armor.skeleton_horse:` (Boolean, Whether armor able to be equipped)
 * `feeding-can-age:` (Boolean, whether feeding can turn baby dead horses to adults)
 * `leashing:` (Boolean, whether users can attach leashes to dead horses)
+* `packet-modification:` (Boolean, whether packets are modified to include barding info)
 * `taming.vanilla-like:` (Boolean, whether users can attempt to tame dead horses by mounting)
 * `taming.food-based:` (Boolean, whether users can attempt to tame dead horses by feeding)    
 

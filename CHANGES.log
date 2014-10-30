@@ -1,3 +1,13 @@
+[2014-10-30] v1.2
+    - Added ability to modify the packets sent to include dead horse barding
+        - Requires ProtocolLib
+    - Streamlined handling of barding equipping behind the scenes
+    - Include comments describing each node in configuration
+
+[2014-10-29] v1.2-alpha
+    - Added ability to equip dead horses with barding
+    - Enforce damage reduction on dead horses with barding
+
 [2014-05-04] v1.1
     - Added MetricsLite functionality (see mcstats.org)
     - Added vanilla-like taming

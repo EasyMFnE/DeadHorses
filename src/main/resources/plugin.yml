@@ -7,6 +7,7 @@ author: EasyMFnE
 database: false
 main: net.easymfne.deadhorses.DeadHorses
 load: STARTUP
+softdepend: [ProtocolLib]
 
 commands:
   deadhorses:

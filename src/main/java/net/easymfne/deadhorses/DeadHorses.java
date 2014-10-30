@@ -16,12 +16,25 @@ package net.easymfne.deadhorses;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.MetricsLite;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
 /**
  * Main plugin class, responsible for its own setup, logging, reloading, and shutdown operations.
@@ -31,7 +44,17 @@ import org.mcstats.MetricsLite;
  */
 public class DeadHorses extends JavaPlugin {
 
+  /* Packet modification constants. */
+  private final String PROTOCOL_LIB = "ProtocolLib";
+  private final int ENTITY_INDEX = 0;
+  private final int WATCHABLE_INDEX = 0;
+  private final int ARMOR_INDEX = 22;
+  private final int DIAMOND_BARDING_VALUE = 3;
+  private final int GOLD_BARDING_VALUE = 2;
+  private final int IRON_BARDING_VALUE = 1;
+
   private Config config = null;
+  private boolean hookedProtocolLib = false;
   private DeadHorsesCommand deadHorsesCommand = null;
   private BardingListener bardingListener = null;
   private PlayerListener playerListener = null;
@@ -66,10 +89,60 @@ public class DeadHorses extends JavaPlugin {
   }
 
   /**
+   * Get the metadata integer value for a horse's armor.
+   * 
+   * @param horse The horse
+   * @return The armor value
+   */
+  private int getArmorMetadataValue(Horse horse) {
+    if (horse != null && horse.getInventory().getArmor() != null) {
+      switch (horse.getInventory().getArmor().getType()) {
+        case DIAMOND_BARDING:
+          return DIAMOND_BARDING_VALUE;
+        case GOLD_BARDING:
+          return GOLD_BARDING_VALUE;
+        case IRON_BARDING:
+          return IRON_BARDING_VALUE;
+        default:
+      }
+    }
+    return 0;
+  }
+
+  /**
    * @return the configuration helper instance
    */
   public Config getPluginConfig() {
     return config;
+  }
+
+  /**
+   * Examine an EntityMetadata packet and if it is for a dead horse, modify it to reflect the actual
+   * value of the horse's armor.
+   * 
+   * @param event PacketEvent to examine and potentially modify.
+   */
+  private void handleMetadataPacket(PacketEvent event) {
+    Entity entity = event.getPacket().getEntityModifier(event).read(ENTITY_INDEX);
+    if (entity != null && entity.getType() == EntityType.HORSE) {
+      switch (((Horse) entity).getVariant()) {
+        default:
+          return;
+        case SKELETON_HORSE:
+        case UNDEAD_HORSE:
+          List<WrappedWatchableObject> watchables =
+              event.getPacket().getWatchableCollectionModifier().read(WATCHABLE_INDEX);
+          for (WrappedWatchableObject watchable : watchables) {
+            if (watchable.getIndex() == ARMOR_INDEX) {
+              int armor = getArmorMetadataValue((Horse) entity);
+              // if (!watchable.getValue().equals(armor)) {
+              watchable.setValue(armor, true);
+              // }
+              return;
+            }
+          }
+      }
+    }
   }
 
   /**
@@ -110,6 +183,7 @@ public class DeadHorses extends JavaPlugin {
     deadHorsesCommand = new DeadHorsesCommand(this);
     bardingListener = new BardingListener(this);
     playerListener = new PlayerListener(this);
+    setupPacketModification();
     startMetrics();
     fancyLog("=== ENABLE COMPLETE (" + (Calendar.getInstance().getTimeInMillis() - start)
         + "ms) ===");
@@ -125,6 +199,43 @@ public class DeadHorses extends JavaPlugin {
     reloadConfig();
     fancyLog("=== RELOAD COMPLETE (" + (Calendar.getInstance().getTimeInMillis() - start)
         + "ms) ===");
+  }
+
+  /**
+   * 
+   */
+  public void sendMetadataUpdatePacket(Horse horse) {
+    if (hookedProtocolLib) {
+      ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+      PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+      packet.getIntegers().write(0, horse.getEntityId());
+      List<WrappedWatchableObject> watchables = new ArrayList<WrappedWatchableObject>();
+      watchables.add(new WrappedWatchableObject(ARMOR_INDEX, getArmorMetadataValue(horse)));
+      packet.getWatchableCollectionModifier().write(WATCHABLE_INDEX, watchables);
+      manager.broadcastServerPacket(packet, horse, true);
+    }
+  }
+
+  /**
+   * Set up packet listening for ENTITY_METADATA packets so they can be modified to actually contain
+   * the dead horses' equipped armor.
+   */
+  private void setupPacketModification() {
+    if (getServer().getPluginManager().getPlugin(PROTOCOL_LIB) instanceof ProtocolLibrary) {
+      fancyLog("ProtocolLib detected, creating hook for entity metadata packets.");
+      ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+      manager.addPacketListener(new PacketAdapter(new PacketAdapter.AdapterParameteters()
+          .plugin(this).serverSide().types(PacketType.Play.Server.ENTITY_METADATA)) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          if (config.isPacketModificationEnabled()) {
+            handleMetadataPacket(event);
+          }
+        }
+      });
+      hookedProtocolLib = true;
+      fancyLog("Entity metadata packet hooked.");
+    }
   }
 
   /**

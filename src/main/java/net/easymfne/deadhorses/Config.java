@@ -107,6 +107,13 @@ public class Config {
   }
 
   /**
+   * @return Whether to modify EntityMetadata packets to have clients see equipped armor.
+   */
+  public boolean isPacketModificationEnabled() {
+    return plugin.getConfig().getBoolean("packet-modification", false);
+  }
+
+  /**
    * @return Whether users can attempt to tame dead horses by riding them, like in vanilla
    *         Minecraft.
    */

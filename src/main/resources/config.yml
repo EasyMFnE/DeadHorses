@@ -5,11 +5,21 @@
 # GENERAL SETTINGS
 ##################
 
+# Whether to allow DeadHorses to be equipped with barding (armor).
 armor:
   skeleton_horse: true
   undead_horse: true
+
+# Whether feeding a DeadHorse can age it from a baby to an adult.
 feeding-can-age: true
+
+# Whether leads can be used on DeadHorses.
 leashing: true
+
+# Whether to modify DeadHorse metadata packets to include armor value.
+packet-modification: false
+
+# Whether DeadHorses can be tamed using each method.
 taming:
   vanilla-like: true
   food-based: true
