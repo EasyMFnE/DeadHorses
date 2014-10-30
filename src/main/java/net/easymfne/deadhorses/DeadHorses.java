@@ -33,6 +33,7 @@ public class DeadHorses extends JavaPlugin {
 
   private Config config = null;
   private DeadHorsesCommand deadHorsesCommand = null;
+  private BardingListener bardingListener = null;
   private PlayerListener playerListener = null;
 
   /* Strings for fancyLog() methods */
@@ -81,6 +82,8 @@ public class DeadHorses extends JavaPlugin {
     fancyLog("=== DISABLE START ===");
     playerListener.close();
     playerListener = null;
+    bardingListener.close();
+    bardingListener = null;
     deadHorsesCommand.close();
     deadHorsesCommand = null;
     config = null;
@@ -105,6 +108,7 @@ public class DeadHorses extends JavaPlugin {
 
     config = new Config(this);
     deadHorsesCommand = new DeadHorsesCommand(this);
+    bardingListener = new BardingListener(this);
     playerListener = new PlayerListener(this);
     startMetrics();
     fancyLog("=== ENABLE COMPLETE (" + (Calendar.getInstance().getTimeInMillis() - start)

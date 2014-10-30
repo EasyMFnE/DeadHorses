@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.easymfne.plugins</groupId>
-  <artifactId>DeadHorses</artifactId>
-  <version>1.1</version>
-  <name>${project.artifactId}</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.easymfne.plugins</groupId>
+    <artifactId>DeadHorses</artifactId>
+    <version>1.2</version>
+    <name>${project.artifactId}</name>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
@@ -69,15 +70,20 @@
             </plugin>
         </plugins>
     </build>
-      <repositories>
+    <repositories>
         <repository>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
                 <checksumPolicy>fail</checksumPolicy>
-            </snapshots> 
+            </snapshots>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>comphenix-rep</id>
+            <name>Comphenix Repository</name>
+            <url>http://repo.comphenix.net/content/groups/public</url>
         </repository>
         <repository>
             <id>Plugin Metrics</id>
@@ -88,9 +94,14 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>LATEST</version>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

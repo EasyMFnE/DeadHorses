@@ -57,6 +57,14 @@ public class Config {
   }
 
   /**
+   * @param variant A variant of horse
+   * @return Whether the horse variant should be allowed to equip barding
+   */
+  public boolean isArmorEquippable(Horse.Variant variant) {
+    return plugin.getConfig().getBoolean("armor." + variant.name().toLowerCase(), false);
+  }
+
+  /**
    * Examine an itemstack and determine if a specific horse Variant can eat it
    * 
    * @param variant The type of Horse

@@ -5,6 +5,9 @@
 # GENERAL SETTINGS
 ##################
 
+armor:
+  skeleton_horse: true
+  undead_horse: true
 feeding-can-age: true
 leashing: true
 taming:
