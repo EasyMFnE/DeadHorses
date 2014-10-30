@@ -6,7 +6,7 @@
 [Bug Report](https://github.com/EasyMFnE/DeadHorses/issues) |
 [Donate](https://www.paypal.com/cgi-bin/webscr?hosted_button_id=457RX2KYUDY5G&item_name=DeadHorses&cmd=_s-xclick)</center>
 
-<center>**Latest Release:** v1.0 for Bukkit 1.7+</center>
+<center>**Latest Release:** v1.2-alpha for Bukkit 1.7+</center>
 
 ## About ##
 
@@ -20,6 +20,7 @@ Players using the DeadHorses plugin can:
 * Feed dead horses (see below)
 * Tame dead horses (see below)
 * Mount & ride dead horses
+* Equip dead horses with barding (armor)
 
 **Note:** This plugin does not affect natural mob spawning, and is best used with another plugin that allows dead horses to spawn.  The horses can be summoned via command (see `Commands`), but is primarily meant for administrative testing and not for users.
 
@@ -33,6 +34,10 @@ The plugin supports two different modes of taming:
 ### Feeding ###
 
 In addition to taming dead horses, feeding can cause baby dead horses to mature into adults. The chance to age a baby dead horse is the same as the chance to tame it (with the food item) as defined in the configuration.
+
+### Barding ###
+
+Dead horses can be equipped with barding like normal horses.  When equipped, the damage suffered is reduced by the appropriate amount.  The barding does not render, because of a limitation within Minecraft itself.
 
 ## Installation ##
 
@@ -62,6 +67,7 @@ At startup, the plugin will create a default configuration file if none exists. 
 ### General ###
 Default configuration has all set to 'true'.  Settings default to 'false' if undefined.
 
+* `armor.undead_horse:` & `armor.skeleton_horse:` (Boolean, Whether armor able to be equipped)
 * `feeding-can-age:` (Boolean, whether feeding can turn baby dead horses to adults)
 * `leashing:` (Boolean, whether users can attach leashes to dead horses)
 * `taming.vanilla-like:` (Boolean, whether users can attempt to tame dead horses by mounting)
