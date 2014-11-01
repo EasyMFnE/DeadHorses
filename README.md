@@ -41,7 +41,7 @@ In addition to taming dead horses, feeding can cause baby dead horses to mature 
 
 Dead horses can be equipped with barding like normal horses.  When equipped, the damage suffered is reduced by the appropriate amount.
 
-**Note:** The server does not send the metadata necessary to texture dead horses with the barding texture.  Modifying the packets sent to the client fixes this, but requires client-side modifications to render properly.  If packet modification is enabled, clients without necessary modifications will see the horse with a pure white texture.  One modification that allows this is [HorseTweaks](https://github/com/EasyMFnE/HorseTweaks).
+**Note:** The server does not send the metadata necessary to texture dead horses with the barding texture.  Modifying the packets sent to the client fixes this, but requires client-side modifications to render properly.  If packet modification is enabled, clients without necessary modifications will see the horse with a pure white texture.  One modification that allows this is [HorseTweaks](https://github.com/EasyMFnE/HorseTweaks).
 
 ## Installation ##
 
