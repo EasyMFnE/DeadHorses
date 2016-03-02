@@ -6,6 +6,22 @@
 # maven
 /build.xml
 /target
+/v19r1/target
+/v19r1/.classpath
+/v19r1/.project
+/v19r1/.settings
+/older/target
+/older/.classpath
+/older/.project
+/older/.settings
+/common/target
+/common/.classpath
+/common/.project
+/common/.settings
+/deadhorses/target
+/deadhorses/.classpath
+/deadhorses/.project
+/deadhorses/.settings
 /maven.txt
 
 # temp files

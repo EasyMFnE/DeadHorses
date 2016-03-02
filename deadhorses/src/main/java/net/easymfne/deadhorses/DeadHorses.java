@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -58,6 +59,8 @@ public class DeadHorses extends JavaPlugin {
   private DeadHorsesCommand deadHorsesCommand = null;
   private BardingListener bardingListener = null;
   private PlayerListener playerListener = null;
+  public String version;
+  public String clazzName;
 
   /* Strings for fancyLog() methods */
   private final String logPrefix = ChatColor.DARK_GREEN + "[DeadHorses] ";
@@ -180,6 +183,10 @@ public class DeadHorses extends JavaPlugin {
     }
 
     config = new Config(this);
+    this.version = getNmsVersion().replace("_", "").toLowerCase();
+    if(!checkCompat()){
+    	this.setEnabled(false);
+    }
     deadHorsesCommand = new DeadHorsesCommand(this);
     bardingListener = new BardingListener(this);
     playerListener = new PlayerListener(this);
@@ -251,6 +258,36 @@ public class DeadHorses extends JavaPlugin {
     } catch (IOException e) {
       fancyLog(Level.WARNING, "Metrics exception: " + e.getMessage());
     }
+  }
+  
+  private String getNmsVersion()
+  {
+    return Bukkit.getServer().getClass().getPackage().getName().replace("org.bukkit.craftbukkit.", "");
+  }
+  
+  private boolean checkCompat()
+  {
+	if(this.version.equals("v19r1")){
+		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+	}else{
+		this.version = "older";
+		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+	}
+    
+    try {
+      Class<?> clazz = Class.forName(this.clazzName);
+      if (AbstractEffects.class.isAssignableFrom(clazz)) {
+        return true;
+      }
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");
+      setEnabled(false);
+      return false;
+    } catch (ClassNotFoundException e) {
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");
+      setEnabled(false);
+    }
+    
+    return false;
   }
 
 }
