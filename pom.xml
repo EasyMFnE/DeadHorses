@@ -20,7 +20,7 @@
     
     <modules>  
       <module>common</module>
-      <module>deadhorses</module>
+      <module>deadhorses-main</module>
       <module>v19r1</module>
       <module>older</module>         
     </modules>

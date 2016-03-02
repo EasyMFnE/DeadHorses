@@ -4,7 +4,7 @@
     <groupId>net.easymfne</groupId>
     <artifactId>deadhorses</artifactId>
     <packaging>jar</packaging>
-    <name>deadhorses</name>
+    <name>deadhorses-main</name>
     <version>1.3</version>
     <!-- This is where I track the version -->
     <repositories>

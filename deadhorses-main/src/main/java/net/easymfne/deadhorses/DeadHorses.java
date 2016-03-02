@@ -267,10 +267,18 @@ public class DeadHorses extends JavaPlugin {
   
   private boolean checkCompat()
   {
-	if(this.version.equals("v19r1")){
-		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
-	}else{
+	String baseVersion = this.version.substring(1 ,3);
+	int version = Integer.parseInt(baseVersion);
+	if(version < 17){
+		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.7");
+		setEnabled(false);
+	    return false;
+	}
+	if(version == 17){
 		this.version = "older";
+		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+	}
+	if(version > 17){
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
 	}
     
@@ -285,9 +293,8 @@ public class DeadHorses extends JavaPlugin {
     } catch (ClassNotFoundException e) {
       getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");
       setEnabled(false);
+      return false;
     }
-    
-    return false;
   }
 
 }
