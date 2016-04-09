@@ -53,6 +53,7 @@ public class DeadHorses extends JavaPlugin {
   private final int DIAMOND_BARDING_VALUE = 3;
   private final int GOLD_BARDING_VALUE = 2;
   private final int IRON_BARDING_VALUE = 1;
+  public int Version;
 
   private Config config = null;
   private boolean hookedProtocolLib = false;
@@ -61,6 +62,7 @@ public class DeadHorses extends JavaPlugin {
   private PlayerListener playerListener = null;
   public String version;
   public String clazzName;
+  public String sendPacket;
 
   /* Strings for fancyLog() methods */
   private final String logPrefix = ChatColor.DARK_GREEN + "[DeadHorses] ";
@@ -268,23 +270,25 @@ public class DeadHorses extends JavaPlugin {
   private boolean checkCompat()
   {
 	String baseVersion = this.version.substring(1 ,3);
-	int version = Integer.parseInt(baseVersion);
-	if(version < 17){
+	Version = Integer.parseInt(baseVersion);
+	if(this.Version < 17){
 		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.7");
 		setEnabled(false);
 	    return false;
 	}
-	if(version == 17){
+	if(this.Version == 17){
 		this.version = "older";
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
 	}
-	if(version > 17){
+	if(this.Version > 18){
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+		this.sendPacket = (getClass().getPackage().getName() + "." + this.version + ".SendPacketTask");
 	}
     
     try {
       Class<?> clazz = Class.forName(this.clazzName);
-      if (AbstractEffects.class.isAssignableFrom(clazz)) {
+      Class<?> clazz1 = Class.forName(this.sendPacket);
+      if (AbstractEffects.class.isAssignableFrom(clazz) && AbstractMountTask.class.isAssignableFrom(clazz1)) {
         return true;
       }
       getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");

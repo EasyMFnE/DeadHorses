@@ -16,6 +16,7 @@ package net.easymfne.deadhorses;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
@@ -36,6 +37,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import net.easymfne.deadhorses.AbstractEffects;
 
 /**
@@ -228,6 +231,7 @@ public class PlayerListener implements Listener {
       plugin.getServer().getPluginManager().callEvent(mountEvent);
       if (!mountEvent.isCancelled()) {
         horse.setPassenger(player);
+        sendMountPacket(player);
       }
       return;
     }
@@ -266,7 +270,7 @@ public class PlayerListener implements Listener {
       return;
     }
     Horse horse = (Horse) event.getVehicle();
-
+    sendMountPacket((Player)event.getExited());
     if (plugin.getPluginConfig().isVanillaTamingEnabled() && horse.isAdult() && !horse.isTamed()) {
     	effect.playAngryEffects(horse);
     }
@@ -289,6 +293,40 @@ public class PlayerListener implements Listener {
       return true;
     }
     return false;
+  }
+  
+  @SuppressWarnings("deprecation")
+  private void sendMountPacket(Player player) {
+	  if(this.plugin.Version > 18){
+		  Class<?> clazz = null;
+			try {
+		        clazz = Class.forName(this.plugin.sendPacket);
+		    } catch (ClassNotFoundException e) {
+		      e.printStackTrace();
+		      return;
+		    }
+			if(AbstractMountTask.class.isAssignableFrom(clazz)){
+				try {
+					final Player p = player;
+					final AbstractMountTask task = (AbstractMountTask)clazz.asSubclass(clazz).newInstance();
+					new BukkitRunnable() {	        
+				          @Override
+				          public void run() {
+				        	  task.sendPacket(p);
+				          }
+				          
+				      }.runTaskLater(this.plugin, 2L);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
+			}			
+	  }
   }
 
 }
