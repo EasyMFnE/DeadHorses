@@ -270,12 +270,12 @@ public class DeadHorses extends JavaPlugin {
   {
 	String baseVersion = this.version.substring(1 ,3);
 	Version = Integer.parseInt(baseVersion);
-	if(this.Version < 17){
-		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.7");
+	if(this.Version < 16){
+		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.6");
 		setEnabled(false);
 	    return false;
 	}
-	if(this.Version == 17){
+	if(this.Version <= 18){
 		this.version = "older";
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
 	}
