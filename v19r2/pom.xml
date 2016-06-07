@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.easymfne</groupId>
-  <artifactId>deadhorses-v19r1</artifactId>
+  <artifactId>deadhorses-v19r2</artifactId>
   <packaging>jar</packaging>
-  <name>DeadHorses implementation v19r1</name>
-  <version>v19r1</version>
+  <name>DeadHorses implementation v19r2</name>
+  <version>v19r2</version>
 
   <parent>
     <groupId>net.easymfne.deadhorses</groupId>
@@ -17,14 +17,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.9.2-R0.1-SNAPSHOT</version>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot</artifactId>
-      <version>1.9.2-R0.1-SNAPSHOT</version>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

@@ -193,7 +193,6 @@ public class DeadHorses extends JavaPlugin {
     bardingListener = new BardingListener(this);
     playerListener = new PlayerListener(this);
     setupPacketModification();
-    startMetrics();
     fancyLog("=== ENABLE COMPLETE (" + (Calendar.getInstance().getTimeInMillis() - start)
         + "ms) ===");
   }

@@ -22,6 +22,7 @@
       <module>common</module>
       <module>deadhorses-main</module>
       <module>v19r1</module>
+      <module>v19r2</module>
       <module>older</module>         
     </modules>
     

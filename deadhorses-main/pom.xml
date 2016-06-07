@@ -24,6 +24,13 @@
         </dependency>
         <dependency>
             <groupId>net.easymfne</groupId>
+            <artifactId>deadhorses-v19r2</artifactId>
+            <version>v19r2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.easymfne</groupId>
             <artifactId>deadhorses-older</artifactId>
             <version>older</version>
             <type>jar</type>
@@ -32,7 +39,7 @@
         <dependency>
             <groupId>net.easymfne</groupId>
             <artifactId>deadhorses-common</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -95,6 +102,7 @@
                                     <include>org.mcstats.bukkit:metrics-lite</include>
                                     <include>net.easymfne:deadhorses-older</include>
                                     <include>net.easymfne:deadhorses-v19r1</include>
+                                    <include>net.easymfne:deadhorses-v19r2</include>
                                     <include>net.easymfne:deadhorses-common</include>
                                 </includes>
                             </artifactSet>
