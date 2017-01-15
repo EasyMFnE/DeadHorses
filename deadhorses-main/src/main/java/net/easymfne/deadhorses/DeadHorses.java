@@ -270,16 +270,19 @@ public class DeadHorses extends JavaPlugin {
   {
 	String baseVersion = this.version.substring(1 ,3);
 	Version = Integer.parseInt(baseVersion);
-	if(this.Version < 16){
+	
+	if(this.Version < 16 && this.Version != 11){
 		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.6");
-		setEnabled(false);
+		this.setEnabled(false);
 	    return false;
 	}
-	if(this.Version <= 18){
+	if(this.Version <= 18 && this.Version != 11){
 		this.version = "older";
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
 	}
-	if(this.Version > 18){
+	if(this.Version > 18 || this.Version == 11){
+		getLogger().info("Version: " + this.version);
+		this.version = "v19plus";
 		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
 		this.sendPacket = (getClass().getPackage().getName() + "." + this.version + ".SendPacketTask");
 	}
@@ -290,12 +293,10 @@ public class DeadHorses extends JavaPlugin {
       if (AbstractEffects.class.isAssignableFrom(clazz) && AbstractMountTask.class.isAssignableFrom(clazz1)) {
         return true;
       }
-      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");
-      setEnabled(false);
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + baseVersion + "} is not supported yet!");
       return false;
     } catch (ClassNotFoundException e) {
-      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + this.version + "} is not supported yet!");
-      setEnabled(false);
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + baseVersion + "} is not supported yet!");
       return false;
     }
   }
