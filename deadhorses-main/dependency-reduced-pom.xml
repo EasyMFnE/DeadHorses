@@ -34,8 +34,7 @@
                 <includes>
                   <include>org.mcstats.bukkit:metrics-lite</include>
                   <include>net.easymfne:deadhorses-older</include>
-                  <include>net.easymfne:deadhorses-v19r1</include>
-                  <include>net.easymfne:deadhorses-v19r2</include>
+                  <include>net.easymfne:deadhorses-v19plus</include>
                   <include>net.easymfne:deadhorses-common</include>
                 </includes>
               </artifactSet>

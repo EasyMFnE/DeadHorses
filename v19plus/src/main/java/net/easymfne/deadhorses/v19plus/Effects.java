@@ -1,4 +1,4 @@
-package net.easymfne.deadhorses.v19r2;
+package net.easymfne.deadhorses.v19plus;
 
 import org.bukkit.EntityEffect;
 import org.bukkit.Sound;

@@ -231,7 +231,7 @@ public class PlayerListener implements Listener {
       plugin.getServer().getPluginManager().callEvent(mountEvent);
       if (!mountEvent.isCancelled()) {
         horse.setPassenger(player);
-        sendMountPacket(player);
+        sendMountPacket();
       }
       return;
     }
@@ -270,7 +270,7 @@ public class PlayerListener implements Listener {
       return;
     }
     Horse horse = (Horse) event.getVehicle();
-    sendMountPacket((Player)event.getExited());
+    sendMountPacket();
     if (plugin.getPluginConfig().isVanillaTamingEnabled() && horse.isAdult() && !horse.isTamed()) {
     	effect.playAngryEffects(horse);
     }
@@ -296,7 +296,7 @@ public class PlayerListener implements Listener {
   }
   
   @SuppressWarnings("deprecation")
-  private void sendMountPacket(Player player) {
+  private void sendMountPacket() {
 	  if(this.plugin.Version > 18){
 		  Class<?> clazz = null;
 			try {
@@ -307,12 +307,11 @@ public class PlayerListener implements Listener {
 		    }
 			if(AbstractMountTask.class.isAssignableFrom(clazz)){
 				try {
-					final Player p = player;
 					final AbstractMountTask task = (AbstractMountTask)clazz.asSubclass(clazz).newInstance();
 					new BukkitRunnable() {	        
 				          @Override
 				          public void run() {
-				        	  task.sendPacket(p);
+				        	  task.sendPacket();
 				          }
 				          
 				      }.runTaskLater(this.plugin, 2L);
