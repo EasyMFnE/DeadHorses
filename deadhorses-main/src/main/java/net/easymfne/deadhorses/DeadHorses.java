@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -52,12 +53,16 @@ public class DeadHorses extends JavaPlugin {
   private final int DIAMOND_BARDING_VALUE = 3;
   private final int GOLD_BARDING_VALUE = 2;
   private final int IRON_BARDING_VALUE = 1;
+  public int Version;
 
   private Config config = null;
   private boolean hookedProtocolLib = false;
   private DeadHorsesCommand deadHorsesCommand = null;
   private BardingListener bardingListener = null;
   private PlayerListener playerListener = null;
+  public String version;
+  public String clazzName;
+  public String sendPacket;
 
   /* Strings for fancyLog() methods */
   private final String logPrefix = ChatColor.DARK_GREEN + "[DeadHorses] ";
@@ -180,11 +185,14 @@ public class DeadHorses extends JavaPlugin {
     }
 
     config = new Config(this);
+    this.version = getNmsVersion().replace("_", "").toLowerCase();
+    if(!checkCompat()){
+    	this.setEnabled(false);
+    }
     deadHorsesCommand = new DeadHorsesCommand(this);
     bardingListener = new BardingListener(this);
     playerListener = new PlayerListener(this);
     setupPacketModification();
-    startMetrics();
     fancyLog("=== ENABLE COMPLETE (" + (Calendar.getInstance().getTimeInMillis() - start)
         + "ms) ===");
   }
@@ -250,6 +258,46 @@ public class DeadHorses extends JavaPlugin {
       }
     } catch (IOException e) {
       fancyLog(Level.WARNING, "Metrics exception: " + e.getMessage());
+    }
+  }
+  
+  private String getNmsVersion()
+  {
+    return Bukkit.getServer().getClass().getPackage().getName().replace("org.bukkit.craftbukkit.", "");
+  }
+  
+  private boolean checkCompat()
+  {
+	String baseVersion = this.version.substring(1 ,3);
+	Version = Integer.parseInt(baseVersion);
+	
+	if(this.Version < 16 && this.Version != 11){
+		getLogger().log(Level.WARNING, "DeadHorses could not be loaded, Horses did not exist before Minecraft 1.6");
+		this.setEnabled(false);
+	    return false;
+	}
+	if(this.Version <= 18 && this.Version != 11){
+		this.version = "older";
+		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+	}
+	if(this.Version > 18 || this.Version == 11){
+		getLogger().info("Version: " + this.version);
+		this.version = "v19plus";
+		this.clazzName = (getClass().getPackage().getName() + "." + this.version + ".Effects");
+		this.sendPacket = (getClass().getPackage().getName() + "." + this.version + ".SendPacketTask");
+	}
+    
+    try {
+      Class<?> clazz = Class.forName(this.clazzName);
+      Class<?> clazz1 = Class.forName(this.sendPacket);
+      if (AbstractEffects.class.isAssignableFrom(clazz) && AbstractMountTask.class.isAssignableFrom(clazz1)) {
+        return true;
+      }
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + baseVersion + "} is not supported yet!");
+      return false;
+    } catch (ClassNotFoundException e) {
+      getLogger().log(Level.WARNING, "DeadHorses could not be loaded, version {" + baseVersion + "} is not supported yet!");
+      return false;
     }
   }
 

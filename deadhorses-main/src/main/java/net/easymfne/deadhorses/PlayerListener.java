@@ -16,6 +16,8 @@ package net.easymfne.deadhorses;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -35,6 +37,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import net.easymfne.deadhorses.AbstractEffects;
 
 /**
  * The class that monitors and reacts to server events.
@@ -145,6 +150,25 @@ public class PlayerListener implements Listener {
    */
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+	Class<?> clazz = null;
+	try {
+        clazz = Class.forName(this.plugin.clazzName);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
+	AbstractEffects effect;
+	try {
+		effect = (AbstractEffects)clazz.asSubclass(clazz).newInstance();
+	} catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return;
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return;
+	}
     if (!isDeadHorse(event.getRightClicked())) {
       return;
     }
@@ -181,7 +205,7 @@ public class PlayerListener implements Listener {
         plugin.getServer().getPluginManager().callEvent(tameEvent);
         if (!tameEvent.isCancelled()) {
           horse.setOwner(player);
-          playFeedEffects(horse, true);
+          effect.playFeedEffects(horse, true);
           return;
         }
       }
@@ -192,7 +216,7 @@ public class PlayerListener implements Listener {
         horse.setAdult();
       }
 
-      playFeedEffects(horse, false);
+      effect.playFeedEffects(horse, false);
       return;
     }
 
@@ -200,13 +224,14 @@ public class PlayerListener implements Listener {
     if (plugin.getPluginConfig().isVanillaTamingEnabled() && horse.isAdult() && !horse.isTamed()
         && horse.isEmpty()) {
       if (!isHoldingNothing(player)) {
-        playAngryEffects(horse);
+    	  effect.playAngryEffects(horse);
         return;
       }
       DeadVehicleEnterEvent mountEvent = new DeadVehicleEnterEvent(horse, player);
       plugin.getServer().getPluginManager().callEvent(mountEvent);
       if (!mountEvent.isCancelled()) {
         horse.setPassenger(player);
+        sendMountPacket();
       }
       return;
     }
@@ -219,6 +244,25 @@ public class PlayerListener implements Listener {
    */
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   public void onVehicleExitEvent(VehicleExitEvent event) {
+	Class<?> clazz = null;
+	try {
+		clazz = Class.forName(this.plugin.clazzName);
+	} catch (ClassNotFoundException e) {
+		e.printStackTrace();
+	    return;
+	}
+	AbstractEffects effect;
+	try {
+		effect = (AbstractEffects)clazz.asSubclass(clazz).newInstance();
+	} catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return;
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return;
+	}
     if (!isDeadHorse(event.getVehicle())) {
       return;
     }
@@ -226,33 +270,9 @@ public class PlayerListener implements Listener {
       return;
     }
     Horse horse = (Horse) event.getVehicle();
-
+    sendMountPacket();
     if (plugin.getPluginConfig().isVanillaTamingEnabled() && horse.isAdult() && !horse.isTamed()) {
-      playAngryEffects(horse);
-    }
-  }
-
-
-  /**
-   * Play effects triggered by making a horse angry.
-   * 
-   * @param horse The horse
-   */
-  private void playAngryEffects(Horse horse) {
-    horse.getWorld().playSound(horse.getLocation(), Sound.HORSE_ANGRY, 1.0f, 0.75f);
-    horse.playEffect(EntityEffect.WOLF_SMOKE);
-  }
-
-  /**
-   * Play effects triggered by an eating horse.
-   * 
-   * @param horse The horse
-   * @param happy Show hearts?
-   */
-  private void playFeedEffects(Horse horse, boolean happy) {
-    horse.getWorld().playSound(horse.getLocation(), Sound.EAT, 1.0f, 0.75f);
-    if (happy) {
-      horse.playEffect(EntityEffect.WOLF_HEARTS);
+    	effect.playAngryEffects(horse);
     }
   }
 
@@ -273,6 +293,39 @@ public class PlayerListener implements Listener {
       return true;
     }
     return false;
+  }
+  
+  @SuppressWarnings("deprecation")
+  private void sendMountPacket() {
+	  if(this.plugin.Version > 18){
+		  Class<?> clazz = null;
+			try {
+		        clazz = Class.forName(this.plugin.sendPacket);
+		    } catch (ClassNotFoundException e) {
+		      e.printStackTrace();
+		      return;
+		    }
+			if(AbstractMountTask.class.isAssignableFrom(clazz)){
+				try {
+					final AbstractMountTask task = (AbstractMountTask)clazz.asSubclass(clazz).newInstance();
+					new BukkitRunnable() {	        
+				          @Override
+				          public void run() {
+				        	  task.sendPacket();
+				          }
+				          
+				      }.runTaskLater(this.plugin, 2L);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
+			}			
+	  }
   }
 
 }
